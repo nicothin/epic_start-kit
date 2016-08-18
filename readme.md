@@ -19,3 +19,18 @@
 - [Sublime Text 3 для работы с фронтэндом](https://github.com/nicothin/sublime-text)
 - [Gulp для самых маленьких](https://www.youtube.com/watch?v=vW51JUVT66w) (видео)
 - [Скринкаст по Gulp](https://www.youtube.com/playlist?list=PLDyvV36pndZFLTE13V4qNWTZbeipNhCgQ) (серия видео)
+
+
+## Как стянуть из этого (мастер) репозитория какие-то дополнения в свой форк-репозиторий
+
+[Синхронизация репозитория-форка с мастер-репозиторием](https://github.com/nicothin/web-development/tree/master/git#Синхронизация-репозитория-форка-с-мастер-репозиторием) — исходник.
+
+Есть [мастер-репозиторий](https://github.com/nicothin/epic_start-kit), вы сделали его форк, но потом в мастер-репозиторий были внесены изменения. Задача: стянуть с мастер-репозитория изменения в свой форк.
+
+``` bash
+# указана последовательность действий:
+git remote add upstream git@github.com:nicothin/epic_start-kit.git # добавляем удаленный репозиторий: сокр. имя — upstream, URL этого репозитория
+git fetch upstream # качаем все ветки мастер-репозитория, но пока не сливаем со своими
+git checkout master # переключаемся на ветку master своего репозитория
+git merge upstream/master # вливаем ветку master удалённого репозитория upstream в свою ветку master
+```
