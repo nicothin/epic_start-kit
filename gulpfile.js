@@ -21,6 +21,8 @@ const ghPages = require('gulp-gh-pages');
 const newer = require('gulp-newer');
 const imagemin = require('gulp-imagemin');
 const pngquant = require('imagemin-pngquant');
+const uglify = require('gulp-uglify');
+const concat = require('gulp-concat');
 
 // ЗАДАЧА: Компиляция препроцессора
 gulp.task('less', function(){
@@ -70,6 +72,19 @@ gulp.task('clean', function () {
     dirs.build + '/**/*',                                   // все файлы из папки сборки (путь из константы)
     '!' + dirs.build + '/readme.md'                         // кроме readme.md (путь из константы)
   ]);
+});
+
+// ЗАДАЧА: Конкатенация и углификация Javascript
+gulp.task('js', function () {
+  return gulp.src([
+      dirs.source + '/js/jquery-3.1.0.min.js',
+      dirs.source + '/js/jquery-migrate-1.4.1.min.js',
+      dirs.source + '/js/owl.carousel.min.js',
+      dirs.source + '/js/script.js',
+    ])
+    .pipe(concat('script.min.js'))
+    .pipe(uglify())
+    .pipe(gulp.dest(dirs.build + '/js'));
 });
 
 // ЗАДАЧА: Сборка всего
