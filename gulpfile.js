@@ -23,6 +23,9 @@ const imagemin = require('gulp-imagemin');
 const pngquant = require('imagemin-pngquant');
 const uglify = require('gulp-uglify');
 const concat = require('gulp-concat');
+const cheerio = require('gulp-cheerio');
+const svgstore = require('gulp-svgstore');
+const svgmin = require('gulp-svgmin');
 
 // ЗАДАЧА: Компиляция препроцессора
 gulp.task('less', function(){
@@ -53,8 +56,10 @@ gulp.task('html', function() {
 
 // ЗАДАЧА: Копирование и оптимизация изображений
 gulp.task('img', function () {
-  return gulp.src(
+  return gulp.src([
     dirs.source + '/img/*.{gif,png,jpg,jpeg,svg}',          // какие файлы обрабатывать (путь из константы, маска имени, много расширений)
+    '!' + dirs.source + '/img/sprite-svg.svg',              // SVG-спрайт брать в обработку не будем
+    ],
     {since: gulp.lastRun('img')                             // оставим в потоке обработки только изменившиеся от последнего запуска задачи (в этой сессии) файлы
   })
     .pipe(newer(dirs.build + '/img'))                       // оставить в потоке только новые файлы (сравниваем с содержимым папки билда)
@@ -64,6 +69,34 @@ gulp.task('img', function () {
         use: [pngquant()]
     }))
     .pipe(gulp.dest(dirs.build + '/img'));                  // записываем файлы (путь из константы)
+});
+
+// ЗАДАЧА: Сборка SVG-спрайта
+gulp.task('svgstore', function (callback) {
+  let spritePath = dirs.source + '/img/svg-sprite';
+  if(fileExist(spritePath) !== false) {
+    return gulp.src(spritePath + '/*.svg')
+      .pipe(svgmin(function (file) {
+        return {
+          plugins: [{
+            cleanupIDs: {
+              minify: true
+            }
+          }]
+        }
+      }))
+      .pipe(svgstore({ inlineSvg: true }))
+      .pipe(cheerio(function ($) {
+        $('svg').attr('style',  'display:none');
+      }))
+      .pipe(rename('sprite-svg.svg'))
+      .pipe(gulp.dest(dirs.build + '/img'))
+      .pipe(gulp.dest(dirs.source + '/img'));
+  }
+  else {
+    console.log('Нет файлов для сборки SVG-спрайта');
+    callback();
+  }
 });
 
 // ЗАДАЧА: Очистка папки сборки
@@ -90,7 +123,7 @@ gulp.task('js', function () {
 // ЗАДАЧА: Сборка всего
 gulp.task('build', gulp.series(                             // последовательно:
   'clean',                                                  // последовательно: очистку папки сборки
-  gulp.parallel('less', 'img', 'js'),                       // параллельно: компиляцию стилей, ...
+  gulp.parallel('less', 'img', 'js', 'svgstore'),                       // параллельно: компиляцию стилей, ...
   'html'                                                    // последовательно: сборку разметки
 ));
 
@@ -144,4 +177,14 @@ gulp.task('default',
 function reloader(done) {
   browserSync.reload();
   done();
+}
+
+// Проверка существования файла/папки
+function fileExist(path) {
+  const fs = require('fs');
+  try {
+    fs.statSync(path);
+  } catch(err) {
+    return !(err && err.code === 'ENOENT');
+  }
 }
