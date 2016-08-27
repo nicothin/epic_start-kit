@@ -1,0 +1,18 @@
+/*
+Файл для отдельной подгрузки WOFF-версии файла JS-ом.
+Будет обработан при сборке: в url() будет подставлена base64 кодированная версия указанного файла
+*/
+
+@font-face {
+  font-family: 'Open Sans_my';
+  src: url('opensans.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Open Sans_my';
+  src: url('opensans_bold.woff') format('woff');
+  font-weight: bold;
+  font-style: normal;
+}
