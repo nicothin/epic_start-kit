@@ -55,28 +55,36 @@ gulp.task('html', function() {
     .pipe(gulp.dest(dirs.build));                           // записываем файлы (путь из константы)
 });
 
-// ЗАДАЧА: Копирование и оптимизация изображений
+// ЗАДАЧА: Копирование изображений
 gulp.task('img', function () {
   return gulp.src([
-    dirs.source + '/img/*.{gif,png,jpg,jpeg,svg}',          // какие файлы обрабатывать (путь из константы, маска имени, много расширений)
-    '!' + dirs.source + '/img/sprite-svg.svg',              // SVG-спрайт брать в обработку не будем
-    ],
-    {since: gulp.lastRun('img')                             // оставим в потоке обработки только изменившиеся от последнего запуска задачи (в этой сессии) файлы
-  })
+        dirs.source + '/img/*.{gif,png,jpg,jpeg,svg}',      // какие файлы обрабатывать (путь из константы, маска имени, много расширений)
+      ],
+      {since: gulp.lastRun('img')}                          // оставим в потоке обработки только изменившиеся от последнего запуска задачи (в этой сессии) файлы
+    )
     .pipe(newer(dirs.build + '/img'))                       // оставить в потоке только новые файлы (сравниваем с содержимым папки билда)
-    .pipe(imagemin({                                        // обрабатываем
-        progressive: true,
-        svgoPlugins: [{removeViewBox: false}],
-        use: [pngquant()]
-    }))
     .pipe(gulp.dest(dirs.build + '/img'));                  // записываем файлы (путь из константы)
+});
+
+// ЗАДАЧА: Оптимизация изображений (ЗАДАЧА ЗАПУСКАЕТСЯ ТОЛЬКО ВРУЧНУЮ)
+gulp.task('img:opt', function () {
+  return gulp.src([
+      dirs.source + '/img/*.{gif,png,jpg,jpeg,svg}',        // какие файлы обрабатывать (путь из константы, маска имени, много расширений)
+      '!' + dirs.source + '/img/sprite-svg.svg',            // SVG-спрайт брать в обработку не будем
+    ])
+    .pipe(imagemin({                                        // оптимизируем
+      progressive: true,
+      svgoPlugins: [{removeViewBox: false}],
+      use: [pngquant()]
+    }))
+    .pipe(gulp.dest(dirs.source + '/img'));                  // записываем файлы в исходную папку
 });
 
 // ЗАДАЧА: Сборка SVG-спрайта
 gulp.task('svgstore', function (callback) {
-  let spritePath = dirs.source + '/img/svg-sprite';
+  let spritePath = dirs.source + '/img/svg-sprite';          // константа с путем к исходникам SVG-спрайта
   if(fileExist(spritePath) !== false) {
-    return gulp.src(spritePath + '/*.svg')
+    return gulp.src(spritePath + '/*.svg')                   // берем только SVG файлы из этой папки, подпапки игнорируем
       .pipe(svgmin(function (file) {
         return {
           plugins: [{
@@ -88,11 +96,10 @@ gulp.task('svgstore', function (callback) {
       }))
       .pipe(svgstore({ inlineSvg: true }))
       .pipe(cheerio(function ($) {
-        $('svg').attr('style',  'display:none');
+        $('svg').attr('style',  'display:none');             // дописываем получающемуся SVG-спрайту инлайновое сокрытие
       }))
       .pipe(rename('sprite-svg.svg'))
-      .pipe(gulp.dest(dirs.build + '/img'))
-      .pipe(gulp.dest(dirs.source + '/img'));
+      .pipe(gulp.dest(dirs.build + '/img'));
   }
   else {
     console.log('Нет файлов для сборки SVG-спрайта');
@@ -111,6 +118,7 @@ gulp.task('clean', function () {
 // ЗАДАЧА: Конкатенация и углификация Javascript
 gulp.task('js', function () {
   return gulp.src([
+      // список обрабатываемых файлов
       dirs.source + '/js/jquery-3.1.0.min.js',
       dirs.source + '/js/jquery-migrate-1.4.1.min.js',
       dirs.source + '/js/owl.carousel.min.js',
@@ -136,7 +144,8 @@ gulp.task('css:fonts:woff', function (callback) {
       .pipe(gulp.dest(dirs.build + '/css')); // пишем в папку билда, именно оттуда сей файл будет стягиваться JS-ом
   }
   else {
-    console.log('Файла, из которого генерируется CSS с base64-кодированным шрифтом, нет');
+    console.log('Файла WOFF, из которого генерируется CSS с base64-кодированным шрифтом, нет');
+    console.log('Отсутствующий файл: ' + fontCssPath);
     callback();
 }
 });
@@ -157,7 +166,8 @@ gulp.task('css:fonts:woff2', function (callback) {
       .pipe(gulp.dest(dirs.build + '/css')); // пишем в папку билда, именно оттуда сей файл будет стягиваться JS-ом
   }
   else {
-    console.log('Файла, из которого генерируется CSS с base64-кодированным шрифтом, нет');
+    console.log('Файла WOFF2, из которого генерируется CSS с base64-кодированным шрифтом, нет');
+    console.log('Отсутствующий файл: ' + fontCssPath);
     callback();
   }
 });

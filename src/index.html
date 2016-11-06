@@ -1,12 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-  <!--DEV  Вставка JS, который будет качать шрифт при первом посещении домена -->
-  <script>@@include('fonts/font_loading.js')</script>
-  <!--DEV  Резервное подключение CSS -файла с WOFF шрифтом на случай отключенного JS -->
-  <noscript><link rel="stylesheet" href="css/font_opensans_woff.css"></noscript>
-
   @@include('_include/page-head.html')
   <title>Document</title>
 </head>
@@ -14,7 +8,9 @@
   @@include('img/sprite-svg.svg')
 
   <svg width="24" height="24"><use xlink:href="#loupe"></use></svg>
+  <svg width="24" height="24"><use xlink:href="#rgb"></use></svg>
+  <svg width="24" height="24"><use xlink:href="#tea-cup"></use></svg>
 
-  text
+  <p>text</p>
 </body>
 </html>

@@ -1,4 +1,4 @@
-// Этот скрипт будет размещён в <head> над всеми внешними объявлениями стилей (link[rel=stylesheet])
+// Подгрущка шрифтов
 function loadFont(fontName, woffUrl, woff2Url) {
   // 0. Многие неподдерживаемые браузеры должны останавливать работу тут.
   var nua = navigator.userAgent;
@@ -71,11 +71,3 @@ function loadFont(fontName, woffUrl, woff2Url) {
     return f.status == 'loading';
   }
 }
-
-
-// Вызываем функцию подгрузки
-loadFont(
-    'Open Sans_my',                      // название шрифта
-    '/css/font_opensans_woff.css?v=1',   // откуда с сервака тянуть CSS с закодированным в base64 форматом WOFF
-    '/css/font_opensans_woff2.css?v=1'   // откуда с сервака тянуть CSS с закодированным в base64 форматом WOFF2
-  );
