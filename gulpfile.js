@@ -1,10 +1,5 @@
 'use strict';
 
-// Читаем содержимое package.json в константу
-// const pjson = require('./package.json');
-// Получим из константы другую константу с адресами папок сборки и исходников
-// const dirs = pjson.config.directories;
-
 // Определим необходимые инструменты
 const gulp = require('gulp');
 const less = require('gulp-less');
@@ -13,20 +8,7 @@ const sourcemaps = require('gulp-sourcemaps');
 const postcss = require('gulp-postcss');
 const autoprefixer = require('autoprefixer');
 const mqpacker = require('css-mqpacker');
-// const replace = require('gulp-replace');
-// const fileinclude = require('gulp-file-include');
-// const del = require('del');
 const browserSync = require('browser-sync').create();
-// const ghPages = require('gulp-gh-pages');
-// const newer = require('gulp-newer');
-// const imagemin = require('gulp-imagemin');
-// const pngquant = require('imagemin-pngquant');
-// const uglify = require('gulp-uglify');
-// const concat = require('gulp-concat');
-// const cheerio = require('gulp-cheerio');
-// const svgstore = require('gulp-svgstore');
-// const svgmin = require('gulp-svgmin');
-// const base64 = require('gulp-base64');
 
 // ЗАДАЧА: Компиляция препроцессора
 gulp.task('less', function(){
@@ -60,7 +42,6 @@ gulp.task('serve', gulp.series('build', function() {
     server: './',                                           // папка, которая будет «корнем» сервера (путь из константы)
     port: 3000,                                             // порт, на котором будет работать сервер
     startPath: 'index.html',                                // файл, который буде открываться в браузере при старте сервера
-    // open: false                                          // возможно, каждый раз стартовать сервер не нужно...
   });
 
   gulp.watch(                                               // следим за HTML
