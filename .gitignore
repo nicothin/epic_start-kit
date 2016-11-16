@@ -1,6 +1,4 @@
-build/*
-!build/readme.md
-design/
+css/
 .Saved/
 _arc/
 bower_components/
