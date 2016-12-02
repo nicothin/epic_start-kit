@@ -1,16 +1,60 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru" class="no-js">
 <head>
   @@include('_include/page-head.html')
   <title>Document</title>
 </head>
 <body>
-  @@include('img/sprite-svg.svg')
 
-  <svg width="24" height="24"><use xlink:href="#loupe"></use></svg>
-  <svg width="24" height="24"><use xlink:href="#rgb"></use></svg>
-  <svg width="24" height="24"><use xlink:href="#tea-cup"></use></svg>
+  <div id="gallery-main-pict"></div>
+  <div id="gallery-thumbs" class="owl-carousel">
+    <div>
+      <a href="img/cat_01.jpg">
+        <img src="img/cat_01_thumb.jpg" alt="">
+      </a>
+    </div>
+    <div>
+      <a href="img/cat_02.jpg">
+        <img src="img/cat_02_thumb.jpg" alt="">
+      </a>
+    </div>
+    <div>
+      <a href="img/cat_03.jpg">
+        <img src="img/cat_03_thumb.jpg" alt="">
+      </a>
+    </div>
+    <div>
+      <a href="img/cat_01.jpg">
+        <img src="img/cat_01_thumb.jpg" alt="">
+      </a>
+    </div>
+    <div>
+      <a href="img/cat_02.jpg" id="gallery-start-photo">
+        <img src="img/cat_02_thumb.jpg" alt="">
+      </a>
+    </div>
+    <div>
+      <a href="img/cat_03.jpg">
+        <img src="img/cat_03_thumb.jpg" alt="">
+      </a>
+    </div>
+    <div>
+      <a href="img/cat_01.jpg">
+        <img src="img/cat_01_thumb.jpg" alt="">
+      </a>
+    </div>
+    <div>
+      <a href="img/cat_02.jpg">
+        <img src="img/cat_02_thumb.jpg" alt="">
+      </a>
+    </div>
+    <div>
+      <a href="img/cat_03.jpg">
+        <img src="img/cat_03_thumb.jpg" alt="">
+      </a>
+    </div>
+  </div>
 
-  <p>text</p>
+  <script src="js/script.min.js"></script>
 </body>
 </html>
