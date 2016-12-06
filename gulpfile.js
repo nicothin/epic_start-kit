@@ -27,10 +27,13 @@ const cheerio = require('gulp-cheerio');
 const svgstore = require('gulp-svgstore');
 const svgmin = require('gulp-svgmin');
 const base64 = require('gulp-base64');
+const notify = require('gulp-notify');
+const plumber = require('gulp-plumber');
 
 // ЗАДАЧА: Компиляция препроцессора
 gulp.task('less', function(){
   return gulp.src(dirs.source + '/less/style.less')         // какой файл компилировать (путь из константы)
+    .pipe(plumber({ errorHandler: onError }))
     .pipe(sourcemaps.init())                                // инициируем карту кода
     .pipe(less())                                           // компилируем LESS
     .pipe(rename('style.css'))                              // переименовываем
@@ -46,6 +49,7 @@ gulp.task('less', function(){
 // ЗАДАЧА: Сборка HTML
 gulp.task('html', function() {
   return gulp.src(dirs.source + '/*.html')                  // какие файлы обрабатывать (путь из константы, маска имени)
+    .pipe(plumber({ errorHandler: onError }))
     .pipe(fileinclude({                                     // обрабатываем gulp-file-include
       prefix: '@@',
       basepath: '@file',
@@ -62,6 +66,7 @@ gulp.task('img', function () {
       ],
       {since: gulp.lastRun('img')}                          // оставим в потоке обработки только изменившиеся от последнего запуска задачи (в этой сессии) файлы
     )
+    .pipe(plumber({ errorHandler: onError }))
     .pipe(newer(dirs.build + '/img'))                       // оставить в потоке только новые файлы (сравниваем с содержимым папки билда)
     .pipe(gulp.dest(dirs.build + '/img'));                  // записываем файлы (путь из константы)
 });
@@ -72,6 +77,7 @@ gulp.task('img:opt', function () {
       dirs.source + '/img/*.{gif,png,jpg,jpeg,svg}',        // какие файлы обрабатывать (путь из константы, маска имени, много расширений)
       '!' + dirs.source + '/img/sprite-svg.svg',            // SVG-спрайт брать в обработку не будем
     ])
+    .pipe(plumber({ errorHandler: onError }))
     .pipe(imagemin({                                        // оптимизируем
       progressive: true,
       svgoPlugins: [{removeViewBox: false}],
@@ -85,6 +91,7 @@ gulp.task('svgstore', function (callback) {
   let spritePath = dirs.source + '/img/svg-sprite';          // константа с путем к исходникам SVG-спрайта
   if(fileExist(spritePath) !== false) {
     return gulp.src(spritePath + '/*.svg')                   // берем только SVG файлы из этой папки, подпапки игнорируем
+      .pipe(plumber({ errorHandler: onError }))
       .pipe(svgmin(function (file) {
         return {
           plugins: [{
@@ -124,6 +131,7 @@ gulp.task('js', function () {
       dirs.source + '/js/owl.carousel.min.js',
       dirs.source + '/js/script.js',
     ])
+    .pipe(plumber({ errorHandler: onError }))
     .pipe(concat('script.min.js'))
     .pipe(uglify())
     .pipe(gulp.dest(dirs.build + '/js'));
@@ -134,6 +142,7 @@ gulp.task('css:fonts:woff', function (callback) {
   let fontCssPath = dirs.source + '/fonts/font_opensans_woff.css'; // с каким исходным файлом работаем
   if(fileExist(fontCssPath) !== false) { // если исходный файл существует, продолжим
     return gulp.src(fontCssPath)
+      .pipe(plumber({ errorHandler: onError }))
       .pipe(base64({                   // ищем в CSS файле подключения сторонних ресурсов, чтоб закодировать base64 и вставить прямо в файл
         // baseDir: '/',
         extensions: ['woff'],         // только указанного тут формата ресурсов
@@ -155,6 +164,7 @@ gulp.task('css:fonts:woff2', function (callback) {
   let fontCssPath = dirs.source + '/fonts/font_opensans_woff2.css'; // с каким исходным файлом работаем
   if(fileExist(fontCssPath) !== false) { // если исходный файл существует, продолжим
     return gulp.src(fontCssPath)
+      .pipe(plumber({ errorHandler: onError }))
       .pipe(base64({                   // ищем в CSS файле подключения сторонних ресурсов, чтоб закодировать base64 и вставить прямо в файл
         // baseDir: '/',
         extensions: ['woff2'],         // только указанного тут формата ресурсов
@@ -240,3 +250,10 @@ function fileExist(path) {
     return !(err && err.code === 'ENOENT');
   }
 }
+
+var onError = function(err) {
+    notify.onError({
+      title: "Error in " + err.plugin,
+    })(err);
+    this.emit('end');
+};
