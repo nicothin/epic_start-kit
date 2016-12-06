@@ -29,6 +29,7 @@ const svgmin = require('gulp-svgmin');
 const base64 = require('gulp-base64');
 const notify = require('gulp-notify');
 const plumber = require('gulp-plumber');
+const cleanCSS = require('gulp-cleancss');
 
 // ЗАДАЧА: Компиляция препроцессора
 gulp.task('less', function(){
@@ -42,6 +43,9 @@ gulp.task('less', function(){
         mqpacker({ sort: true }),                           // объединение медиавыражений
     ]))
     .pipe(sourcemaps.write('/'))                            // записываем карту кода как отдельный файл (путь из константы)
+    .pipe(gulp.dest(dirs.build + '/css/'))                  // записываем CSS-файл (путь из константы)
+    .pipe(rename('style.min.css'))                          // переименовываем
+    .pipe(cleanCSS())                                       // сжимаем
     .pipe(gulp.dest(dirs.build + '/css/'))                  // записываем CSS-файл (путь из константы)
     .pipe(browserSync.stream());                            // обновляем в браузере
 });
