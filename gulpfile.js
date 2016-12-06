@@ -217,6 +217,11 @@ gulp.task('serve', gulp.series('build', function() {
     gulp.series('less')                                     // при изменении запускаем компиляцию (обновление браузера — в задаче компиляции)
   );
 
+  gulp.watch(                                               // следим за SVG
+    dirs.source + '/img/svg-sprite/*.svg',
+    gulp.series('svgstore', 'html', reloader)
+  );
+
   gulp.watch(                                               // следим за изображениями
     dirs.source + '/img/*.{gif,png,jpg,jpeg,svg}',
     gulp.series('img', reloader)                            // при изменении оптимизируем, копируем и обновляем в браузере
