@@ -1,0 +1,14 @@
+mixin btn(data)
+  //- Добавочные классы-модификаторы (массив или строка)
+  - modsList = ''
+  if(typeof data.mod == 'object')
+    each mod in data.mod
+      - modsList += ' ' + 'btn--' + mod
+  if(typeof data.mod == 'string')
+    - modsList += ' ' + 'btn--' + data.mod
+  if(data.tag === 'a' && data.href)
+    - var href = {'href': data.href}
+  else
+    - var href = ''
+  #{data.tag}(class='btn' + modsList)&attributes(href)&attributes(attributes)
+    block

@@ -30,6 +30,7 @@ const base64 = require('gulp-base64');
 const notify = require('gulp-notify');
 const plumber = require('gulp-plumber');
 const cleanCSS = require('gulp-cleancss');
+const pug = require('gulp-pug');
 
 // ЗАДАЧА: Компиляция препроцессора
 gulp.task('less', function(){
@@ -48,6 +49,15 @@ gulp.task('less', function(){
     .pipe(cleanCSS())                                       // сжимаем
     .pipe(gulp.dest(dirs.build + '/css/'))                  // записываем CSS-файл (путь из константы)
     .pipe(browserSync.stream());                            // обновляем в браузере
+});
+
+gulp.task('pug', function() {
+  return gulp.src(dirs.source + '/*.pug')
+    .pipe(plumber({ errorHandler: onError }))
+    .pipe(pug({
+      pretty: true
+    }))
+    .pipe(gulp.dest(dirs.build));
 });
 
 // ЗАДАЧА: Сборка HTML
@@ -191,7 +201,8 @@ gulp.task('build', gulp.series(                             // последов�
   'clean',                                                  // последовательно: очистку папки сборки
   'svgstore',
   gulp.parallel('less', 'img', 'js', 'css:fonts:woff', 'css:fonts:woff2'),
-  'html'                                                    // последовательно: сборку разметки
+  'html',
+  'pug'
 ));
 
 // ЗАДАЧА: Локальный сервер, слежение
@@ -219,7 +230,12 @@ gulp.task('serve', gulp.series('build', function() {
 
   gulp.watch(                                               // следим за SVG
     dirs.source + '/img/svg-sprite/*.svg',
-    gulp.series('svgstore', 'html', reloader)
+    gulp.series('svgstore', 'html', 'pug', reloader)
+  );
+
+  gulp.watch(                                               // следим за pug
+    dirs.source + '/**/*.pug',
+    gulp.series('pug', reloader)
   );
 
   gulp.watch(                                               // следим за изображениями

@@ -1,0 +1,167 @@
+doctype html
+
+include pug-include/variables.pug
+include pug-mixins/someBemBlock.pug
+include pug-mixins/btn.pug
+
+html(lang="en")
+
+  head
+    meta(charset="UTF-8")
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    title= menu[0]
+    script(type='text/javascript').
+      var foo = true;
+      if (foo) {
+        console.log(1 + 5)
+      }
+
+  body(class=authenticated ? 'authed' : 'anon')
+
+    //- Такой коммент не попадет в разметку
+    // Строчный коммент, попадет в разметку
+    //
+      Блочный коммент
+      Попадет в разметку
+
+    include img/sprite-svg.svg
+
+    ul: li: a(href="#") привет
+
+
+    p.
+      Jade is a terse and simple
+      templating language with a
+      strong focus on performance
+      and powerful features.
+    p
+      | Jade is a terse and simple
+      | templating language with a
+      | strong focus on performance
+      | and powerful features.
+
+    - var text = "On Dogs Man's Best Friend 111"
+    p= text
+
+    h1= 'Заголовок ' + menu[0]
+
+    p Простой параграф
+    p.class-name Простой параграф с классом
+
+    p(
+      class="megapar"
+      data-attr="more!"
+      style={
+        'color': 'rgba(255, 40, 80, 0.6)',
+        'background-color': '#00f'
+      }
+    ).
+      Параграф со множеством атрибутов
+
+    #container.col text
+
+    input(type="text", placeholder="непарный тег")
+
+    label
+      input(type='checkbox' checked)
+      =' '
+      | 111
+
+
+
+    h2 Интерполяция
+
+    p= theGreat
+    p!= theGreat
+    p Текст и потом #{theGreat}
+    p Текст и потом !{theGreat}
+
+    p
+      a(href="http://#{testUrl}") Тестовая ссылка (старый синтаксис, не работает)
+    p
+      a(href="http://" + testUrl) Тестовая ссылка (новый синтаксис, работает)
+
+
+
+    h2 Условия
+
+    if youAreUsingJade
+      p You are amazing
+    else if ( youAreUsingJade === 'wtf' )
+      p WTF?
+    else
+      p Get on it!
+
+    if !youAreUsingJade
+      p YOU NOT USING PUG???
+
+    - var friends = 10
+    case friends
+      when 0
+        p you have no friends
+      when 1
+        p you have a friend
+      default
+        p you have #{friends} friends
+
+
+
+    h2 Циклы
+
+    - var x = 2;
+    div
+      ul
+        - for (var i=1; i<=x; i++) {
+          li= i + ". Hello"
+        - }
+
+        - for (var i=1; i<=x; i++)
+          li= i + ". Hello"
+
+      - var n = 1;
+      ul
+        while n < 4
+          li= n++ + " Миссисипи"
+
+    ul
+      each val, index in ['zero', 'one', 'two']
+        li= index + ': ' + val
+
+    nav.nav
+      ul
+        each menuItem in menu
+          li: a(href=".") #{menuItem}
+
+    nav.nav-true
+      ul
+        each menuItem in menuTrue
+          li: a(href="" + menuItem.url) #{menuItem.title}
+
+
+
+      h2 Сага о пробельных символах
+
+      <p>Text (html) <a href="#">link text</a> <b>bold text</b></p>
+
+      p Text #[a(href="#") link #[span text]] #[b bold text]
+
+      p Text
+        //- =' '
+        a(href='#') link text
+        //- =' '
+        b bold text
+
+
+
+      h2 Примеси
+
+      +someBemBlock('Какой-то заголовок')
+
+      +someBemBlock('Какой-то другой заголовок')
+        p Некий текст, передаваемый в примесь
+
+      +btn({mod:'success', tag: 'button', href: 'google.com'})(data-attr="google.com").
+        Некий текст в кнопке
+
+      +btn({mod:['danger', 'fuck'], tag: 'a', href: 'google.com'}).
+        Некий текст в кнопке <span>111</span>
