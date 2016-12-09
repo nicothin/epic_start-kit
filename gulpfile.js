@@ -30,6 +30,7 @@ const base64 = require('gulp-base64');
 const notify = require('gulp-notify');
 const plumber = require('gulp-plumber');
 const cleanCSS = require('gulp-cleancss');
+const pug = require('gulp-pug');
 
 // ЗАДАЧА: Компиляция препроцессора
 gulp.task('less', function(){
@@ -61,6 +62,13 @@ gulp.task('html', function() {
     }))
     .pipe(replace(/\n\s*<!--DEV[\s\S]+?-->/gm, ''))         // убираем комментарии <!--DEV ... -->
     .pipe(gulp.dest(dirs.build));                           // записываем файлы (путь из константы)
+});
+
+gulp.task('pug', function() {
+  return gulp.src(dirs.source + '/**/*.pug')
+    .pipe(plumber({ errorHandler: onError }))
+    .pipe(pug())
+    .pipe(gulp.dest(dirs.build));
 });
 
 // ЗАДАЧА: Копирование изображений
@@ -191,6 +199,7 @@ gulp.task('build', gulp.series(                             // последов�
   'clean',                                                  // последовательно: очистку папки сборки
   'svgstore',
   gulp.parallel('less', 'img', 'js', 'css:fonts:woff', 'css:fonts:woff2'),
+  'pug',
   'html'                                                    // последовательно: сборку разметки
 ));
 
@@ -198,9 +207,12 @@ gulp.task('build', gulp.series(                             // последов�
 gulp.task('serve', gulp.series('build', function() {
 
   browserSync.init({                                        // запускаем локальный сервер (показ, автообновление, синхронизацию)
-    server: dirs.build,                                     // папка, которая будет «корнем» сервера (путь из константы)
+    //server: dirs.build,                                     // папка, которая будет «корнем» сервера (путь из константы)
+    server: {
+      baseDir: "./build/"
+    },
     port: 3000,                                             // порт, на котором будет работать сервер
-    startPath: 'index.html',                                // файл, который буде открываться в браузере при старте сервера
+    startPath: '/pug/index.html',                           // файл, который буде открываться в браузере при старте сервера
     // open: false                                          // возможно, каждый раз стартовать сервер не нужно...
   });
 
@@ -212,6 +224,11 @@ gulp.task('serve', gulp.series('build', function() {
     gulp.series('html', reloader)                           // при изменении файлов запускаем пересборку HTML и обновление в браузере
   );
 
+  gulp.watch(
+    dirs.source + '/pug/**/*.pug',
+    gulp.series('pug', reloader)
+  );
+
   gulp.watch(                                               // следим за LESS
     dirs.source + '/less/**/*.less',
     gulp.series('less')                                     // при изменении запускаем компиляцию (обновление браузера — в задаче компиляции)
@@ -219,7 +236,7 @@ gulp.task('serve', gulp.series('build', function() {
 
   gulp.watch(                                               // следим за SVG
     dirs.source + '/img/svg-sprite/*.svg',
-    gulp.series('svgstore', 'html', reloader)
+    gulp.series('svgstore', 'html', 'pug', reloader)
   );
 
   gulp.watch(                                               // следим за изображениями
