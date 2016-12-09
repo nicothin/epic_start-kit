@@ -139,29 +139,29 @@ html(lang="en")
 
 
 
-      h2 Сага о пробельных символах
+    h2 Сага о пробельных символах
 
-      <p>Text (html) <a href="#">link text</a> <b>bold text</b></p>
+    <p>Text (html) <a href="#">link text</a> <b>bold text</b></p>
 
-      p Text #[a(href="#") link #[span text]] #[b bold text]
+    p Text #[a(href="#") link #[span text]] #[b bold text]
 
-      p Text
-        //- =' '
-        a(href='#') link text
-        //- =' '
-        b bold text
+    p Text
+      //- =' '
+      a(href='#') link text
+      //- =' '
+      b bold text
 
 
 
-      h2 Примеси
+    h2 Примеси
 
-      +someBemBlock('Какой-то заголовок')
+    +someBemBlock('Какой-то заголовок')
 
-      +someBemBlock('Какой-то другой заголовок')
-        p Некий текст, передаваемый в примесь
+    +someBemBlock('Какой-то другой заголовок')
+      p Некий текст, передаваемый в примесь
 
-      +btn({mod:'success', tag: 'button', href: 'google.com'})(data-attr="google.com").
-        Некий текст в кнопке
+    +btn({mod:'success', tag: 'button', href: 'google.com'})(data-attr="google.com").
+      Некий текст в кнопке
 
-      +btn({mod:['danger', 'fuck'], tag: 'a', href: 'google.com'}).
-        Некий текст в кнопке <span>111</span>
+    +btn({mod:['danger', 'fuck'], tag: 'a', href: 'google.com'}).
+      Некий текст в кнопке <span>111</span>
