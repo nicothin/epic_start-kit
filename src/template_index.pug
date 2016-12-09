@@ -1,8 +1,12 @@
 extends pug-layouts/layout.pug
 
+block append config
+  - var myAge = 30
+
 block head
   title Тайтл страницы
 
-block content
+block append content
   h1 Заголовок
   p Какой-то контент...
+  p Привет, я #{myName} и мне #{myAge} лет!
