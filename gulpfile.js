@@ -31,6 +31,9 @@ const notify = require('gulp-notify');
 const plumber = require('gulp-plumber');
 const cleanCSS = require('gulp-cleancss');
 const pug = require('gulp-pug');
+const spritesmith = require('gulp.spritesmith');
+const buffer = require('vinyl-buffer');
+const merge = require('merge-stream');
 
 // ЗАДАЧА: Компиляция препроцессора
 gulp.task('less', function(){
@@ -125,6 +128,27 @@ gulp.task('svgstore', function (callback) {
   }
 });
 
+// ЗАДАЧА: сшивка PNG-спрайта
+gulp.task('png:sprite', function () {
+  let fileName = 'sprite-' + Math.random().toString().replace(/[^0-9]/g, '') + '.png';
+  let spriteData = gulp.src('src/img/png-sprite/*.png')
+    .pipe(plumber({ errorHandler: onError }))
+    .pipe(spritesmith({
+      imgName: fileName,
+      cssName: 'sprite.less',
+      cssFormat: 'less',
+      padding: 4,
+      imgPath: '../img/' + fileName
+    }));
+  let imgStream = spriteData.img
+    .pipe(buffer())
+    .pipe(imagemin())
+    .pipe(gulp.dest('build/img'));
+  let cssStream = spriteData.css
+    .pipe(gulp.dest(dirs.source + '/less/'));
+  return merge(imgStream, cssStream);
+});
+
 // ЗАДАЧА: Очистка папки сборки
 gulp.task('clean', function () {
   return del([                                              // стираем
@@ -197,6 +221,7 @@ gulp.task('css:fonts:woff2', function (callback) {
 gulp.task('build', gulp.series(                             // последовательно:
   'clean',                                                  // последовательно: очистку папки сборки
   'svgstore',
+  'png:sprite',
   gulp.parallel('less', 'img', 'js', 'css:fonts:woff', 'css:fonts:woff2'),
   'pug',
   'html'                                                    // последовательно: сборку разметки
@@ -236,6 +261,11 @@ gulp.task('serve', gulp.series('build', function() {
   gulp.watch(                                               // следим за SVG
     dirs.source + '/img/svg-sprite/*.svg',
     gulp.series('svgstore', 'html', 'pug', reloader)
+  );
+
+  gulp.watch(                                               // следим за PNG, которые для спрайтов
+    dirs.source + '/img/png-sprite/*.png',
+    gulp.series('png:sprite', 'less')
   );
 
   gulp.watch(                                               // следим за изображениями
